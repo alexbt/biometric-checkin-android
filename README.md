@@ -1,0 +1,1 @@
+Original source code is FORKED/COPIED from https://github.com/AbhinavS99/AbhinavS99-Realtime-Face-Recognition-with-TfLite
