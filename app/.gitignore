@@ -1,1 +1,3 @@
 /build
+apikey.properties
+src/main/res/values/secrets.xml

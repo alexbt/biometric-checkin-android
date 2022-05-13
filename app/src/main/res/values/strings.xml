@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Face Recognition</string>
+    <string name="app_name">Biometric Checkin</string>
+    <string name="app_name_system">biometric-checkin</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -9,4 +10,41 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="EUC_DISTANCE">Euclidean Distance</string>
+    <string name="ENTER_MEMBER">Ou entrer un nouveau membre:</string>
+    <string name="FIRST_NAME">Prénom</string>
+    <string name="LAST_NAME">Nom de famille</string>
+    <string name="EMAIL">Courriel</string>
+    <string name="PHONE">Téléphone</string>
+    <string name="PHONE_DIGITS">0123456789</string>
+    <string name="ADD">Ajouter</string>
+    <string name="ONE_MEMBER_ADDED">1 Membre ajouté</string>
+    <string name="ONE_MEMBER_COMPLETED">1 Membre existant complété</string>
+    <string name="CANCEL">Annuler</string>
+    <string name="OK">OK</string>
+    <string name="CAMERA_PERMISSIONS_GRANTED">Permission de camera accordée</string>
+    <string name="CAMERA_PERMISSIONS_DENIED">Permission de camera refusée</string>
+    <string name="UNKNOWN">Inconnu</string>
+    <string name="MEMBER_UPDATED">Membre mis-à-jour</string>
+    <string name="NAME_RECORDED">%1$s\nenregistré(e)</string>
+    <string name="MEMBRE_EXISTANT_INCOMPLET">Choisir un membre existant…</string>
+    <string name="ADD_MEMBER">Ajouter le membre:</string>
+    <string name="REMOVE_MEMBER_TITLE">Suppression de membre</string>
+    <string name="CONFIRM_REMOVAL_MEMBER">Voulez-vous vraiment supprimer:\n\n%s</string>
+    <string name="MEMBER_REMOVED_CONFIRMATION">Membre supprimé</string>
+    <string name="IMPORT">Import</string>
+    <string name="EXPORT">Export</string>
+    <string name="IMAGE">Photo présente</string>
+    <string name="SAVE">Sauvegarder</string>
+    <string name="DELETE">Delete</string>
+    <string name="BUILD_VERSION">Version</string>
+    <string name="SCAN_DISTANCE">Tolérance/Distance des scans</string>
+    <string name="SEND_ERROR_REPORT">Envoyer le rapport d\'erreur</string>
+    <string name="UNSAVED_DATA">Tous les membres ont été exportés</string>
+    <string name="LAST_EXPORT">Dernier export des membres</string>
+    <string name="CHECKIN">Checkin</string>
+    <string name="RESET">Reset</string>
+    <string name="ABOUT">About</string>
+    <string name="SCAN">Scan</string>
+    <string name="MEMBERS">Membres</string>
 </resources>

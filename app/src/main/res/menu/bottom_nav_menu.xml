@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_members"
+        android:icon="@drawable/ic_baseline_sports_kabaddi_24"
+        android:title="@string/MEMBERS" />
+
+    <item
+        android:id="@+id/navigation_scan"
+        android:icon="@drawable/ic_baseline_qr_code_scanner_24"
+        android:title="@string/SCAN" />
+
+    <item
+        android:id="@+id/navigation_info"
+        android:icon="@drawable/ic_baseline_info_24"
+        android:title="@string/ABOUT" />
+
+</menu>

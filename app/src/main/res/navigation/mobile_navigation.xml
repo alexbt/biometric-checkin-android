@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_scan">
+
+    <fragment
+        android:id="@+id/navigation_scan"
+        android:name="com.alexbt.biometric.fragments.ScanFragment"
+        android:label="Scan"
+        tools:layout="@layout/fragment_scan" />
+
+
+    <fragment
+        android:id="@+id/navigation_members"
+        android:name="com.alexbt.biometric.fragments.MembersFragment"
+        android:label="Members"
+        tools:layout="@layout/fragment_members" />
+
+    <fragment
+        android:id="@+id/navigation_member_edit"
+        android:name="com.alexbt.biometric.fragments.EditMemberFragment"
+        android:label="Edit"
+        tools:layout="@layout/fragment_member_edit" />
+
+    <fragment
+        android:id="@+id/navigation_member_add"
+        android:name="com.alexbt.biometric.fragments.MemberAddFragment"
+        android:label="Add"
+        tools:layout="@layout/fragment_member_add" />
+
+    <fragment
+        android:id="@+id/navigation_info"
+        android:name="com.alexbt.biometric.fragments.InfoFragment"
+        android:label="Info"
+        tools:layout="@layout/fragment_info" />
+
+</navigation>

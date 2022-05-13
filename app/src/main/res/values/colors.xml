@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gainsboro_gray">#FFDADADA</color>
+    <color name="anthracite">#FF393D47</color>
+    <color name="blueish_anthracite">#FF687494</color>
+    <color name="chrome">#FFDBE2E9</color>
+    <color name="azure">#FF008AD8</color>
+    <color name="dark_chrome">#FF838F9C</color>
+    <color name="darker_chrome">#FF626569</color>
+    <color name="other_chrome">#FFC2C8CF</color>
+    <color name="platinum">#FFE5E1E6</color>
 </resources>

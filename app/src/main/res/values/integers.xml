@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="NB_DAYS_ASK_FOR_EXPORT">7</integer>
+</resources>
