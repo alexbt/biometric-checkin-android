@@ -80,10 +80,6 @@ public class MemberPersistence {
         activity.getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE).edit().putString("membersProp", membersJson).apply();
     }
 
-    public static void updateLastCheckin(Activity activity){
-        activity.getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE).edit().putString("lastCheckinProp", DateUtils.getCurrentTime()).apply();
-    }
-
     public static void markMemberChanged(Activity activity){
         if(activity==null){
             return;

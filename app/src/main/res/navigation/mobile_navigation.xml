@@ -7,32 +7,32 @@
 
     <fragment
         android:id="@+id/navigation_scan"
-        android:name="com.alexbt.biometric.fragments.ScanFragment"
+        android:name="com.alexbt.biometric.fragment.ScanFragment"
         android:label="Scan"
         tools:layout="@layout/fragment_scan" />
 
 
     <fragment
         android:id="@+id/navigation_members"
-        android:name="com.alexbt.biometric.fragments.MembersFragment"
+        android:name="com.alexbt.biometric.fragment.ListMembersFragment"
         android:label="Members"
         tools:layout="@layout/fragment_members" />
 
     <fragment
         android:id="@+id/navigation_member_edit"
-        android:name="com.alexbt.biometric.fragments.EditMemberFragment"
+        android:name="com.alexbt.biometric.fragment.EditMemberFragment"
         android:label="Edit"
         tools:layout="@layout/fragment_member_edit" />
 
     <fragment
         android:id="@+id/navigation_member_add"
-        android:name="com.alexbt.biometric.fragments.MemberAddFragment"
+        android:name="com.alexbt.biometric.fragment.AddMemberFragment"
         android:label="Add"
         tools:layout="@layout/fragment_member_add" />
 
     <fragment
         android:id="@+id/navigation_info"
-        android:name="com.alexbt.biometric.fragments.InfoFragment"
+        android:name="com.alexbt.biometric.fragment.InfoFragment"
         android:label="Info"
         tools:layout="@layout/fragment_info" />
 
