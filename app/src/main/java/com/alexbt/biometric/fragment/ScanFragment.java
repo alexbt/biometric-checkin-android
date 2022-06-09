@@ -33,17 +33,18 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.alexbt.biometric.MyApplication;
 import com.alexbt.biometric.R;
 import com.alexbt.biometric.events.NewCheckinRecordedEvent;
+import com.alexbt.biometric.fragment.viewmodel.JotformMemberViewModel;
 import com.alexbt.biometric.model.Member;
-import com.alexbt.biometric.persistence.MemberPersistence;
 import com.alexbt.biometric.util.DateUtils;
-import com.alexbt.biometric.util.FormatUtil;
 import com.alexbt.biometric.util.ImageUtils;
+import com.alexbt.biometric.util.UrlUtils;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -65,12 +66,15 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -94,12 +98,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
     private TextView countdown;
     private String URL = "";
     private String SOURCE_APP = "";
-    private String JOTFORM_NAME_ID = "";
-    private String JOTFORM_DATE_ID = "";
-    private String JOTFORM_TIME_ID = "";
-    private String JOTFORM_PHONE_ID = "";
-    private String JOTFORM_EMAIL_ID = "";
-    private String JOTFORM_SOURCE_APP_ID = "";
+    private JotformMemberViewModel jotformMemberViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,17 +116,25 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
 
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE);
         SOURCE_APP = getContext().getResources().getString(R.string.SOURCE_APP);
-        JOTFORM_SOURCE_APP_ID = getContext().getResources().getString(R.string.JOTFORM_SOURCE_APP_ID);
-        JOTFORM_NAME_ID = getContext().getResources().getString(R.string.JOTFORM_NAME_ID);
-        JOTFORM_PHONE_ID = getContext().getResources().getString(R.string.JOTFORM_PHONE_ID);
-        JOTFORM_EMAIL_ID = getContext().getResources().getString(R.string.JOTFORM_EMAIL_ID);
-        JOTFORM_DATE_ID = getContext().getResources().getString(R.string.JOTFORM_DATE_ID);
-        JOTFORM_TIME_ID = getContext().getResources().getString(R.string.JOTFORM_TIME_ID);
-        String jotformId = sharedPreferences.getString("jotformIdProp", getContext().getResources().getString(R.string.JOTFORM_ID));
-        String jotformApiKey = sharedPreferences.getString("jotformApiKeyProp", getContext().getResources().getString(R.string.JOTFORM_API_KEY));
+        URL = UrlUtils.addPresenceUrl(getContext());
 
-        String urlStr = getContext().getResources().getString(R.string.POST_BASE_URL);
-        URL = String.format(urlStr, jotformId, jotformApiKey);
+        jotformMemberViewModel = JotformMemberViewModel.getModel(this,
+                UrlUtils.getMembersUrl(getContext()),
+                UrlUtils.updateMembersUrl(getContext()),
+                UrlUtils.addMembersUrl(getContext()));
+
+        jotformMemberViewModel.getJotformMembersOrFetch().observe(this.getViewLifecycleOwner(), new Observer<Set<Member>>() {
+            @Override
+            public void onChanged(Set<Member> members) {
+                if (members == null || getContext() == null) {
+                    return;
+                }
+                adapter.addAll(members);
+                adapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
+                adapter.insert(new Member(null, null, getString(R.string.MEMBRE_EXISTANT_INCOMPLET), "", "", "", null), 0);
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         View camera_switch = root.findViewById(R.id.camera_switch_button);
         previewView = root.findViewById(R.id.camera_preview_image);
@@ -293,11 +300,21 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
     }
 
     private void resetMemberIdentification() {
-        scannedMember.setSelection(0);
-        checkinStatus.setText("");
-        resetButton.setEnabled(false);
-        countdown.setText("");
-        countDownTimer.cancel();
+        if (scannedMember != null) {
+            scannedMember.setSelection(0);
+        }
+        if (checkinStatus != null) {
+            checkinStatus.setText("");
+        }
+        if (resetButton != null) {
+            resetButton.setEnabled(false);
+        }
+        if (countdown != null) {
+            countdown.setText("");
+        }
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -417,11 +434,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        adapter.clear();
-        adapter.addAll(MemberPersistence.getMembers());
-        adapter.add(new Member("Sélectionner le membre", "", "", ""));
-        adapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
-        adapter.notifyDataSetChanged();
+        jotformMemberViewModel.getJotformMembersOrFetch(this.getActivity());
     }
 
     private void recognizeImage(final Bitmap bitmap) {
@@ -472,10 +485,10 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
 
         float distance_local;
 
-        if (MemberPersistence.getMembers().isEmpty()) {
+        if (jotformMemberViewModel.getJotformMembersOrFetch().getValue() == null || jotformMemberViewModel.getJotformMembersOrFetch().getValue().isEmpty()) {
             return;
         }
-        final List<Pair<Member, Float>> nearest = ImageUtils.findNearest(embeedings[0]);//Find 2 closest matching face
+        final List<Pair<Member, Float>> nearest = ImageUtils.findNearest(embeedings[0], jotformMemberViewModel.getJotformMembersOrFetch().getValue());//Find 2 closest matching face
         if (nearest.isEmpty()) {
             return;
         }
@@ -496,8 +509,14 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        cameraProvider.unbindAll();
-        resetMemberIdentification();
+        try {
+            if (cameraProvider != null) {
+                cameraProvider.unbindAll();
+            }
+            resetMemberIdentification();
+        } catch (RuntimeException e) {
+
+        }
     }
 
     private boolean sendCheckin(Member member, Date dateTime, String formattedDate) {
@@ -517,25 +536,26 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         try {
             JSONObject top = new JSONObject();
+            top.put("4", member.getMemberId());
+
             JSONObject name = new JSONObject();
             name.put("first", member.getFirstName());
             name.put("last", member.getLastName());
-            top.put(JOTFORM_NAME_ID, name);
-            top.put(JOTFORM_EMAIL_ID, member.getEmail());
+            top.put("8", name);
+
             JSONObject time = new JSONObject();
             time.put("timeInput", hourMin);
             time.put("ampm", pm_am);
             time.put("hourSelect", hour);
             time.put("minuteSelect", min);
 
-            top.put(JOTFORM_TIME_ID, time);
-            top.put(JOTFORM_PHONE_ID, FormatUtil.formatPhone(member.getPhone()));
+            top.put("6", time);
             JSONObject date = new JSONObject();
             date.put("year", year);
             date.put("month", month);
             date.put("day", day);
-            top.put(JOTFORM_DATE_ID, date);
-            top.put(JOTFORM_SOURCE_APP_ID, SOURCE_APP);
+            top.put("5", date);
+            top.put("7", SOURCE_APP);
             JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, URL, top, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

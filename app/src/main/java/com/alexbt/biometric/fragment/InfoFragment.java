@@ -21,7 +21,8 @@ import com.alexbt.biometric.util.EmailUtils;
 
 public class InfoFragment extends Fragment {
     private EditText distance;
-    private EditText jotformId;
+    private EditText jotformMembersFormId;
+    private EditText jotformPresencesFormId;
     private EditText jotformApiKey;
     private View sendErrorButton;
 
@@ -58,7 +59,8 @@ public class InfoFragment extends Fragment {
 
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE);
         distance = root.findViewById(R.id.distance);
-        jotformId = root.findViewById(R.id.jotformId);
+        jotformMembersFormId = root.findViewById(R.id.jotformMembersFormId);
+        jotformPresencesFormId = root.findViewById(R.id.jotformPresencesFormId);
         jotformApiKey = root.findViewById(R.id.jotformApikey);
         distance.setText(String.format("%s", sharedPreferences.getFloat("distanceProp", 0.75f)));
         TextWatcher te = new TextWatcher() {
@@ -104,7 +106,7 @@ public class InfoFragment extends Fragment {
         };
 
 
-        jotformId.setText(sharedPreferences.getString("jotformIdProp", getContext().getResources().getString(R.string.JOTFORM_ID)));
+        jotformMembersFormId.setText(sharedPreferences.getString("jotformMembersFormIdProp", getContext().getResources().getString(R.string.JOTFORM_MEMBERS_FORM_ID)));
         te = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -118,10 +120,29 @@ public class InfoFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                sharedPreferences.edit().putString("jotformIdProp", jotformId.getText().toString()).apply();
+                sharedPreferences.edit().putString("jotformMembersFormIdProp", jotformMembersFormId.getText().toString()).apply();
             }
         };
-        jotformId.addTextChangedListener(te);
+        jotformMembersFormId.addTextChangedListener(te);
+
+        jotformPresencesFormId.setText(sharedPreferences.getString("jotformPresencesFormIdProp", getContext().getResources().getString(R.string.JOTFORM_PRESENCES_FORM_ID)));
+        te = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                sharedPreferences.edit().putString("jotformPresencesFormIdProp", jotformPresencesFormId.getText().toString()).apply();
+            }
+        };
+        jotformMembersFormId.addTextChangedListener(te);
         return root;
     }
 

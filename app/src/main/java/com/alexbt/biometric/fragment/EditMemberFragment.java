@@ -22,12 +22,14 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.alexbt.biometric.R;
+import com.alexbt.biometric.fragment.viewmodel.JotformMemberViewModel;
 import com.alexbt.biometric.model.CheckDetails;
 import com.alexbt.biometric.model.CheckinMonth;
 import com.alexbt.biometric.model.CheckinYear;
 import com.alexbt.biometric.model.Member;
 import com.alexbt.biometric.persistence.MemberPersistence;
 import com.alexbt.biometric.util.InputValidator;
+import com.alexbt.biometric.util.UrlUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,6 +46,7 @@ public class EditMemberFragment extends Fragment {
     private EditText lastName;
     private final SimpleDateFormat monthParse = new SimpleDateFormat("MM");
     private final SimpleDateFormat monthDisplay = new SimpleDateFormat("MMMM");
+    private  JotformMemberViewModel jotformMemberViewModel;
 
     // Store instance variables based on arguments passed
     @Override
@@ -70,6 +73,11 @@ public class EditMemberFragment extends Fragment {
             return null;
         }
 
+        jotformMemberViewModel = JotformMemberViewModel.getModel(this,
+                UrlUtils.getMembersUrl(getContext()),
+                UrlUtils.updateMembersUrl(getContext()),
+                UrlUtils.addMembersUrl(getContext()));
+
         View root = inflater.inflate(R.layout.fragment_member_edit, container, false);
         phone = root.findViewById(R.id.phone);
         phone.setText(member.getPhone());
@@ -78,7 +86,7 @@ public class EditMemberFragment extends Fragment {
 
         TextView lastCheckin = root.findViewById(R.id.last_checkin);
 
-        CheckDetails checkDetails = checkinDetails.get(member.toKey());
+        CheckDetails checkDetails = checkinDetails.get(member.getMemberId());
         if (checkDetails != null) {
             String lastCheckinStr;
             if (checkDetails.getLastCheckinDate() != null && member.getLastCheckin() != null) {
@@ -150,7 +158,8 @@ public class EditMemberFragment extends Fragment {
                 phoneStr = phoneStr.replace(" ", "")
                         .replace("(", "")
                         .replace(")", "")
-                        .replace("-", "");
+                        .replace("-", "")
+                        .replace(" ", "");
                 EditMemberFragment.member.setPhone(phoneStr);
                 EditMemberFragment.member.setEmail(email.getText().toString());
                 EditMemberFragment.member.setFirstName(firstName.getText().toString());
@@ -164,7 +173,8 @@ public class EditMemberFragment extends Fragment {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     EditMemberFragment.member.setImage(null);
-                                    MemberPersistence.updateMember(getActivity(), member);
+                                    jotformMemberViewModel.updateMember(getActivity(), member);
+                                    //MemberPersistence.updateMember(getActivity(), member);
                                     EditMemberFragment.member = null;
 
                                     NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
@@ -174,7 +184,8 @@ public class EditMemberFragment extends Fragment {
                             .setNegativeButton(android.R.string.no, null).show();
 
                 } else {
-                    MemberPersistence.updateMember(getActivity(), member);
+                    //MemberPersistence.updateMember(getActivity(), member);
+                    jotformMemberViewModel.updateMember(getActivity(), member);
                     EditMemberFragment.member = null;
 
                     NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
@@ -218,7 +229,7 @@ public class EditMemberFragment extends Fragment {
 
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 Toast.makeText(getActivity(), getString(R.string.MEMBER_REMOVED_CONFIRMATION), Toast.LENGTH_SHORT).show();
-                                MemberPersistence.removeMember(getActivity(), member);
+                                //MemberPersistence.removeMember(getActivity(), member);
                                 EditMemberFragment.member = null;
                                 NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
                                 navController.navigate(R.id.navigation_members);

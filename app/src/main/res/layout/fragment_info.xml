@@ -145,18 +145,39 @@
             android:singleLine="true"/>
 
         <TextView
-            android:id="@+id/jotformIdLabel"
+            android:id="@+id/jotformMembersFormIdLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@+id/distance"
             android:linksClickable="true"
             android:paddingStart="3dp"
             android:singleLine="true"
-            android:text="JotForm ID"
+            android:text="JotForm Member Form ID"
             tools:ignore="RtlSymmetry" />
 
         <EditText
-            android:id="@+id/jotformId"
+            android:id="@+id/jotformMembersFormId"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/editTextBackground"
+            android:inputType="text"
+            android:paddingTop="0dp"
+            android:linksClickable="true"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/jotformPresencesFormIdLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/distance"
+            android:linksClickable="true"
+            android:paddingStart="3dp"
+            android:singleLine="true"
+            android:text="JotForm Présence Form ID"
+            tools:ignore="RtlSymmetry" />
+
+        <EditText
+            android:id="@+id/jotformPresencesFormId"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?attr/editTextBackground"

@@ -8,12 +8,16 @@ import android.net.Uri;
 import android.os.Environment;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
 import com.alexbt.biometric.BuildConfig;
 import com.alexbt.biometric.R;
+import com.alexbt.biometric.fragment.viewmodel.JotformMemberViewModel;
 import com.alexbt.biometric.model.Member;
 import com.alexbt.biometric.util.DateUtils;
 import com.alexbt.biometric.util.InputValidator;
 import com.alexbt.biometric.util.JsonUtil;
+import com.alexbt.biometric.util.UrlUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -148,24 +152,28 @@ public class MemberPersistence {
         Toast.makeText(activity.getApplicationContext(), nbUpdated + " Membre(s) importé(s)/mis-à-jour", Toast.LENGTH_SHORT).show();
     }
 
-    public static void exportMembers(Activity activity) {
+    public static void exportMembers(Activity activity, Fragment parentFragment) {
+        final JotformMemberViewModel jotformMemberViewModel = JotformMemberViewModel.getModel(parentFragment,
+                UrlUtils.getMembersUrl(activity.getApplicationContext()),
+                UrlUtils.updateMembersUrl(activity.getApplicationContext()),
+                UrlUtils.addMembersUrl(activity.getApplicationContext()));
+
         Toast.makeText(activity, "export", Toast.LENGTH_SHORT).show();
-        SharedPreferences sharedPreferences = activity.getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE);
-        String json = sharedPreferences.getString("membersProp", "[]");
         try {
+            Set<Member> members = jotformMemberViewModel.getJotformMembersOrFetch().getValue();
             File memberExport = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + "members-export.json");
             if(!memberExport.exists()){
                 memberExport.createNewFile();
             }
             OutputStream fo = new FileOutputStream(memberExport, false);
-            fo.write(json.getBytes(StandardCharsets.UTF_8));
+            fo.write(JsonUtil.toJson(members).getBytes(StandardCharsets.UTF_8));
             fo.close();
             System.out.println("file created: " + memberExport);
             Toast.makeText(activity.getBaseContext(), "Membres exportés vers: " + memberExport.toString(), Toast.LENGTH_LONG).show();
 
-            int nbMembers = MemberPersistence.getMembers().size();
+            int nbMembers = members.size();
             int nbMembersWithImage = 0;
-            for (Member member : MemberPersistence.getMembers()) {
+            for (Member member : members) {
                 if (member.getImage() != null) {
                     nbMembersWithImage++;
                 }

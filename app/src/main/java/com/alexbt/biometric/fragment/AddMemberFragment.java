@@ -3,6 +3,7 @@ package com.alexbt.biometric.fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -39,15 +40,17 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.alexbt.biometric.R;
+import com.alexbt.biometric.fragment.viewmodel.JotformMemberViewModel;
 import com.alexbt.biometric.model.Member;
-import com.alexbt.biometric.persistence.MemberPersistence;
 import com.alexbt.biometric.util.FormatUtil;
 import com.alexbt.biometric.util.ImageUtils;
 import com.alexbt.biometric.util.InputValidator;
+import com.alexbt.biometric.util.UrlUtils;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
@@ -348,15 +351,28 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
             }
         };
 
-        Set<Member> filteredMembers = new HashSet<>();
-        for(Member member: MemberPersistence.getMembers()){
-            if (member.getImage()==null){
-                filteredMembers.add(member);
+        final JotformMemberViewModel jotformMemberViewModel = JotformMemberViewModel.getModel(this,
+                UrlUtils.getMembersUrl(getContext()),
+                UrlUtils.updateMembersUrl(getContext()),
+                UrlUtils.addMembersUrl(getContext()));
+        jotformMemberViewModel.getJotformMembersOrFetch().observe(this.getViewLifecycleOwner(), new Observer<Set<Member>>() {
+            @Override
+            public void onChanged(Set<Member> members) {
+                if (members == null || getContext() == null) {
+                    return;
+                }
+                Set<Member> filteredMembers = new HashSet<>();
+                for(Member member: members){
+                    if (member.getImage()==null){
+                        filteredMembers.add(member);
+                    }
+                }
+                adapter.addAll(filteredMembers);
+                adapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
+                adapter.insert(new Member(null, null, getString(R.string.MEMBRE_EXISTANT_INCOMPLET), "", "", "", null), 0);
+                adapter.notifyDataSetChanged();
             }
-        }
-        adapter.addAll(filteredMembers);
-        adapter.add(new Member(getString(R.string.MEMBRE_EXISTANT_INCOMPLET), "", "", ""));
-        adapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
+        });
 
         // Set up the buttons
         builder.setPositiveButton(R.string.ADD, (dialog, which) -> {
@@ -365,10 +381,11 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
             }
             Member member;
             if (spinner.getSelectedItemPosition() == 0) {
-                member = new Member(inputFirstName.getText().toString().trim(),
+                member = new Member(null, null, inputFirstName.getText().toString().trim(),
                         inputLastName.getText().toString().trim(),
                         inputEmail.getText().toString().trim(),
-                        inputPhone.getText().toString().trim()
+                        inputPhone.getText().toString().trim(),
+                        null
                 );
                 Toast.makeText(getActivity().getApplicationContext(), R.string.ONE_MEMBER_ADDED, Toast.LENGTH_SHORT).show();
             } else {
@@ -380,15 +397,22 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
             //Create and Initialize new object with Face embeddings and Name.
             member.setImage(embeedings);
 
-            MemberPersistence.addMember(getActivity(), member);
-            MemberPersistence.markMemberChanged(getActivity());
-            NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-            navController.navigate(R.id.navigation_members);
+            jotformMemberViewModel.addMember(getActivity(), member);
+            //MemberPersistence.addMember(getActivity(), member);
+            //MemberPersistence.markMemberChanged(getActivity());
+        });
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                if(getActivity() == null){
+                    return;
+                }
+                NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.navigation_members);
+            }
         });
         builder.setNegativeButton(R.string.CANCEL, (dialog, which) -> {
             dialog.cancel();
-            NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-            navController.navigate(R.id.navigation_members);
         });
 
         dialog = builder.create();

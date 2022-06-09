@@ -8,6 +8,14 @@ public class Content{
     private String status;
     private Map<String, Map<String, Object>> answers;
 
+    public String getId() {
+        return id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
     public Map<String, Map<String, Object>> getAnswers() {
         return answers;
     }

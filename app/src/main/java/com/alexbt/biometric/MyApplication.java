@@ -3,6 +3,7 @@ package com.alexbt.biometric;
 import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
+import android.widget.Toast;
 
 import com.alexbt.biometric.util.DateUtils;
 
@@ -40,5 +41,6 @@ public class MyApplication extends Application {
                 .edit()
                 .putString("lastErrorProp", error)
                 .apply();
+        Toast.makeText(context, "Error recorded: " + (e != null ? e.getMessage() : "null"), Toast.LENGTH_SHORT).show();
     }
 }

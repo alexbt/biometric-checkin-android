@@ -34,15 +34,13 @@ import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.alexbt.biometric.MyApplication;
 import com.alexbt.biometric.R;
-import com.alexbt.biometric.fragment.viewmodel.JotformMemberSubmissionsViewModel;
+import com.alexbt.biometric.fragment.viewmodel.JotformMemberViewModel;
 import com.alexbt.biometric.model.CheckDetails;
-import com.alexbt.biometric.model.Content;
-import com.alexbt.biometric.model.JotformMemberSubmissions;
 import com.alexbt.biometric.model.Member;
 import com.alexbt.biometric.persistence.MemberPersistence;
 import com.alexbt.biometric.util.JsonUtil;
+import com.alexbt.biometric.util.UrlUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -52,22 +50,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class ListMembersFragment extends Fragment implements View.OnClickListener, Observer<JotformMemberSubmissions> {
+public class ListMembersFragment extends Fragment implements View.OnClickListener {
     private ArrayAdapter<Member> stringArrayAdapter;
     private ActivityResultLauncher<Intent> someActivityResultLauncher;
-    private JotformMemberSubmissionsViewModel vm;
+    private JotformMemberViewModel jotformMemberViewModel;
     private final Map<String, CheckDetails> checkinDetails = new TreeMap<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE);
-        String jotformId = sharedPreferences.getString("jotformIdProp", getContext().getResources().getString(R.string.JOTFORM_ID));
-        String jotformApiKey = sharedPreferences.getString("jotformApiKeyProp", getContext().getResources().getString(R.string.JOTFORM_API_KEY));
-        String urlStr = getContext().getResources().getString(R.string.GET_BASE_URL);
-        String URL = String.format(urlStr, jotformId, jotformApiKey);
-        vm = JotformMemberSubmissionsViewModel.getModel(this, URL);
-        vm.getJotformMemberSubmissionsOrFetch().observe(this, this);
+        jotformMemberViewModel = JotformMemberViewModel.getModel(this,
+                UrlUtils.getMembersUrl(getContext()),
+                UrlUtils.updateMembersUrl(getContext()),
+                UrlUtils.addMembersUrl(getContext()));
+        jotformMemberViewModel.getJotformMembersOrFetch().observe(this, new Observer<Set<Member>>() {
+            @Override
+            public void onChanged(Set<Member> members) {
+                if (members == null || getContext() == null) {
+                    return;
+                }
+                stringArrayAdapter.clear();
+                stringArrayAdapter.addAll(members);
+                stringArrayAdapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
+                stringArrayAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -217,7 +224,7 @@ public class ListMembersFragment extends Fragment implements View.OnClickListene
         root.findViewById(R.id.export_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MemberPersistence.exportMembers(getActivity());
+                MemberPersistence.exportMembers(getActivity(), getParentFragment());
             }
         });
 
@@ -241,12 +248,12 @@ public class ListMembersFragment extends Fragment implements View.OnClickListene
             return;
         }
         super.onResume();
-        Set<Member> members = MemberPersistence.getMembers();
-        stringArrayAdapter.clear();
-        stringArrayAdapter.addAll(members);
-        stringArrayAdapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
-        stringArrayAdapter.notifyDataSetChanged();
-        vm.getJotformMemberSubmissionsOrFetch(this.getActivity());
+        //Set<Member> members = MemberPersistence.getMembers();
+        //stringArrayAdapter.clear();
+        //stringArrayAdapter.addAll(members);
+        //stringArrayAdapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
+        //stringArrayAdapter.notifyDataSetChanged();
+        jotformMemberViewModel.getJotformMembersOrFetch(this.getActivity());
     }
 
     @Override
@@ -261,34 +268,5 @@ public class ListMembersFragment extends Fragment implements View.OnClickListene
         }
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.navigation_members);
-    }
-
-    @Override
-    public void onChanged(JotformMemberSubmissions jotformMemberSubmissions) {
-        if (jotformMemberSubmissions == null || getContext() == null) {
-            return;
-        }
-        checkinDetails.clear();
-        try {
-            for (Content content : jotformMemberSubmissions.getContent()) {
-                Map<String, Object> names = content.getAnswers().get("4");
-                Map<String, Object> date = content.getAnswers().get("9");
-                Map<String, Object> dateAnswer = (Map<String, Object>) date.get("answer");
-                String year = (String) dateAnswer.get("year");
-                String month = String.format("%02d", Integer.parseInt(dateAnswer.get("month").toString()));
-                String day = String.format("%02d", Integer.parseInt(dateAnswer.get("day").toString()));
-
-                String name = names.get("prettyFormat").toString();
-
-                CheckDetails checkDetails = checkinDetails.get(name);
-                if (checkDetails == null) {
-                    checkDetails = new CheckDetails();
-                    checkinDetails.put(name, checkDetails);
-                }
-                checkDetails.addCheckin(year, month, day);
-            }
-        } catch (Exception e) {
-            MyApplication.saveError(getContext(), e);
-        }
     }
 }

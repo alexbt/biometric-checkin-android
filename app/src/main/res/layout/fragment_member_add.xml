@@ -11,8 +11,8 @@
 
     <FrameLayout
         android:id="@+id/container"
-        android:layout_width="297dp"
-        android:layout_height="279dp"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,11 +21,9 @@
 
         <Button
             android:id="@+id/camera_switch_button"
-            android:layout_width="68dp"
-            android:layout_height="65dp"
-            android:layout_marginStart="229dp"
-            android:layout_marginEnd="229dp"
-            android:layout_marginRight="229dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="400dp"
             android:background="@drawable/cam"
             android:backgroundTint="@color/teal_200"
             android:elevation="1dp"
@@ -36,6 +34,7 @@
 
         <androidx.camera.view.PreviewView
             android:id="@+id/camera_preview_image"
+            android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -44,10 +43,10 @@
 
     <ImageButton
         android:id="@+id/add_member_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="164dp"
-        android:layout_marginBottom="168dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="400dp"
+        android:layout_marginBottom="400dp"
         android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="@+id/captured_image_view"
         app:layout_constraintStart_toStartOf="@+id/captured_image_view"
@@ -55,8 +54,8 @@
 
     <ImageView
         android:id="@+id/captured_image_view"
-        android:layout_width="203dp"
-        android:layout_height="200dp"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
         android:layout_marginBottom="104dp"
         android:background="#2C7E57C2"
         android:elevation="1dp"

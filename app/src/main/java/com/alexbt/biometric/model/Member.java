@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Member implements Comparable<Member>, Serializable {
+    private String submissionId;
+    private String memberId;
     private String firstName;
     private String lastName;
     private String email;
@@ -19,13 +21,16 @@ public class Member implements Comparable<Member>, Serializable {
     private String lastCheckin;
     private float[][] image;
 
-    public Member(@NonNull String firstName, @NonNull String lastName, @NonNull String email, @NonNull String phone) {
+    public Member(String submissionId, String memberId, @NonNull String firstName, @NonNull String lastName, @NonNull String email, @NonNull String phone, float[][] image) {
+        this.submissionId = submissionId;
+        this.memberId = memberId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.image = null;
         this.lastCheckin = null;
+        this.image = image;
         touchUpdatedAt();
     }
 
@@ -95,22 +100,22 @@ public class Member implements Comparable<Member>, Serializable {
         this.updatedAt = updatedAt;
     }
 
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public String getSubmissionId() {
+        return submissionId;
+    }
+
     @Override
     public String toString() {
-        if (email == null || email.isEmpty()) {
-            return "";
-        }
-
         return firstName + " " + lastName + "\n" + email;
     }
 
     public String toShortString() {
-        if (email == null || email.isEmpty()) {
-            return "";
-        }
         return firstName + ", " + lastName + ", " + email;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -120,17 +125,17 @@ public class Member implements Comparable<Member>, Serializable {
         return firstName.equals(member.firstName) && lastName.equals(member.lastName);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName);
+    }
+
     public static String toUnique(String firstName, String lastName) {
         return firstName + " " + lastName;
     }
 
     public String toKey() {
         return toUnique(firstName, lastName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(firstName, lastName);
     }
 
     @Override

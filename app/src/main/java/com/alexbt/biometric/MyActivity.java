@@ -81,18 +81,7 @@ public class MyActivity extends AppCompatActivity {
                         }).show();
             }
 
-            if(MemberPersistence.isExportRequired(MyActivity.this)){
-                new AlertDialog.Builder(this)
-                        .setTitle("Export des membres")
-                        .setMessage("Voulez-vous faire un export des membres?")
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                MemberPersistence.exportMembers(MyActivity.this);
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, null).show();
-            } else if (BuildConfig.VERSION.compareTo(remoteVersion) < 0) {
+            if (BuildConfig.VERSION.compareTo(remoteVersion) < 0) {
                 new AlertDialog.Builder(this)
                         .setTitle(String.format("Nouvelle version '%s'", remoteVersion))
                         .setMessage("Voulez-vous la télécharger?")

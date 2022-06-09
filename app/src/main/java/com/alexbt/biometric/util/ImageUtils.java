@@ -17,6 +17,8 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.util.Pair;
 
+import androidx.lifecycle.LiveData;
+
 import com.alexbt.biometric.model.Member;
 import com.alexbt.biometric.persistence.MemberPersistence;
 
@@ -30,6 +32,7 @@ import java.nio.ReadOnlyBufferException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ImageUtils {
 
@@ -182,11 +185,11 @@ public class ImageUtils {
         return resultBitmap;
     }
 
-    public static List<Pair<Member, Float>> findNearest(float[] emb) {
+    public static List<Pair<Member, Float>> findNearest(float[] emb, Set<Member> members) {
         List<Pair<Member, Float>> neighbour_list = new ArrayList<>();
         Pair<Member, Float> ret = null; //to get closest match
         Pair<Member, Float> prev_ret = null; //to get second closest match
-        for (Member member : MemberPersistence.getMembers()) {
+        for (Member member : members) {
 
             if (member.getImage() == null) {
                 continue;
