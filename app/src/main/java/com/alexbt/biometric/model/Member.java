@@ -56,6 +56,15 @@ public class Member implements Comparable<Member>, Serializable {
         this.image = image;
     }
 
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    public void setSubmissionId(String submissionId) {
+        this.submissionId = submissionId;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
         touchUpdatedAt();

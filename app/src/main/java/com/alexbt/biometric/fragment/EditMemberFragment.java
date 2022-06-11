@@ -27,9 +27,12 @@ import com.alexbt.biometric.model.CheckDetails;
 import com.alexbt.biometric.model.CheckinMonth;
 import com.alexbt.biometric.model.CheckinYear;
 import com.alexbt.biometric.model.Member;
-import com.alexbt.biometric.persistence.MemberPersistence;
 import com.alexbt.biometric.util.InputValidator;
+import com.alexbt.biometric.util.RequestUtil;
 import com.alexbt.biometric.util.UrlUtils;
+import com.android.volley.Response;
+
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,6 +50,7 @@ public class EditMemberFragment extends Fragment {
     private final SimpleDateFormat monthParse = new SimpleDateFormat("MM");
     private final SimpleDateFormat monthDisplay = new SimpleDateFormat("MMMM");
     private  JotformMemberViewModel jotformMemberViewModel;
+    private final Response.Listener dummyListener = (Response.Listener<JSONObject>) response -> { };
 
     // Store instance variables based on arguments passed
     @Override
@@ -173,7 +177,7 @@ public class EditMemberFragment extends Fragment {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     EditMemberFragment.member.setImage(null);
-                                    jotformMemberViewModel.updateMember(getActivity(), member);
+                                    jotformMemberViewModel.updateMember(getActivity(), member, dummyListener);
                                     //MemberPersistence.updateMember(getActivity(), member);
                                     EditMemberFragment.member = null;
 
@@ -184,8 +188,7 @@ public class EditMemberFragment extends Fragment {
                             .setNegativeButton(android.R.string.no, null).show();
 
                 } else {
-                    //MemberPersistence.updateMember(getActivity(), member);
-                    jotformMemberViewModel.updateMember(getActivity(), member);
+                    jotformMemberViewModel.updateMember(getActivity(), member, dummyListener);
                     EditMemberFragment.member = null;
 
                     NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);

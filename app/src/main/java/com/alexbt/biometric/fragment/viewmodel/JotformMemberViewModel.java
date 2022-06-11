@@ -1,7 +1,6 @@
 package com.alexbt.biometric.fragment.viewmodel;
 
 import android.app.Activity;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -17,6 +16,7 @@ import com.alexbt.biometric.model.Content;
 import com.alexbt.biometric.model.JotformMember;
 import com.alexbt.biometric.model.Member;
 import com.alexbt.biometric.util.FormatUtil;
+import com.alexbt.biometric.util.RequestUtil;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -38,17 +38,13 @@ import java.util.TreeSet;
 
 public class JotformMemberViewModel extends ViewModel {
     public MutableLiveData<Set<Member>> jotformMembers = new MutableLiveData<>();
-    public MutableLiveData<String> jotfortMemberNextId = new MutableLiveData<>();
+    public MutableLiveData<Integer> jotformNextMemberId = new MutableLiveData<>();
     private final String URL;
     private final String updateMemberUrl;
     private final String addMemberUrl;
 
     public LiveData<Set<Member>> getJotformMembersOrFetch() {
         return jotformMembers;
-    }
-
-    public LiveData<String> getJotfortMemberNextId() {
-        return jotfortMemberNextId;
     }
 
     public LiveData<Set<Member>> getJotformMembersOrFetch(final Activity activity) {
@@ -122,7 +118,7 @@ public class JotformMemberViewModel extends ViewModel {
                     members.add(new Member(submissionId, memberId, firstName, lastName, email, phone, pc));
                 }
                 jotformMembers.setValue(members);
-                jotfortMemberNextId.setValue("GBG-" + String.format("%04d", currentHighestMemberId + 1));
+                jotformNextMemberId.setValue(currentHighestMemberId+1);
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -157,26 +153,37 @@ public class JotformMemberViewModel extends ViewModel {
     public void addMember(Activity activity, Member member) {
 
         if (member.getSubmissionId() != null && member.getMemberId() != null) {
-            updateMember(activity, member);
+            updateMember(activity, member, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    System.out.println(response);
+                    try {
+                        RequestUtil.sendCheckin(member, activity);
+                    } catch (Exception e) {
+                        //TODO ABT tmp
+                    }
+                }
+            });
         } else {
             addNewMember(activity, member);
         }
     }
 
     private void addNewMember(Activity activity, Member member) {
-        RequestQueue requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
-        String picJson = new Gson().toJson(member.getImage());
-        if (picJson == null || picJson.equals("null") || picJson.isEmpty()) {
-            picJson = " ";
-        }
         try {
+            RequestQueue requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
+            String picJson = new Gson().toJson(member.getImage());
+            if (picJson == null || picJson.equals("null") || picJson.isEmpty()) {
+                picJson = " ";
+            }
+            String memberId = "GBG-" + String.format("%04d", jotformNextMemberId.getValue());
             JSONObject top = new JSONObject();
             top.put("17", picJson);
             top.put("14", "White");
             top.put("15", "0");
             top.put("16", "Non");
             top.put("8", "");//Notes
-            top.put("19", jotfortMemberNextId.getValue());
+            top.put("19", memberId);
             JSONObject name = new JSONObject();
             name.put("first", member.getFirstName());
             name.put("last", member.getLastName());
@@ -190,11 +197,19 @@ public class JotformMemberViewModel extends ViewModel {
             top.put("6", date);
 
             JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, addMemberUrl, top, new Response.Listener<JSONObject>() {
-
                 @Override
                 public void onResponse(JSONObject response) {
                     System.out.println(response);
                     jotformMembers.setValue(null);
+                    jotformNextMemberId.setValue(jotformNextMemberId.getValue() + 1);
+                    try {
+                        String submissionId = (String) ((JSONObject)response.get("content")).get("submissionID");
+                        member.setSubmissionId(submissionId);
+                        member.setMemberId(memberId);
+                        RequestUtil.sendCheckin(member, activity);
+                    } catch (Exception e) {
+                        //TODO ABT tmp
+                    }
                 }
             }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
                 @Override
@@ -208,48 +223,33 @@ public class JotformMemberViewModel extends ViewModel {
         }
     }
 
-    public void updateMember(Activity activity, Member member) {
-        String updateUrl = String.format(updateMemberUrl, member.getSubmissionId());
-        RequestQueue requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
-        String picJson = " ";
-        if (member.getImage() != null) {
-            picJson = new Gson().toJson(member.getImage());
-            if (picJson == null || picJson.equals("null") || picJson.isEmpty()) {
-                picJson = " ";
-            }
-        }
+    public void updateMember(Activity activity, Member member, Response.Listener<JSONObject> listener) {
         try {
+            String updateUrl = String.format(updateMemberUrl, member.getSubmissionId());
+            RequestQueue requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
+            String picJson = " ";
+            if (member.getImage() != null) {
+                picJson = new Gson().toJson(member.getImage());
+                if (picJson == null || picJson.equals("null") || picJson.isEmpty()) {
+                    picJson = " ";
+                }
+            }
             JSONObject top = new JSONObject();
-            top.put("17", picJson);
-            //top.put("14", "White");
-            //top.put("15", "0");
-            //top.put("16", "Non");
-            //top.put("8", "");//Notes
-            //top.put("19", member.getMemberId());
             JSONObject name = new JSONObject();
             name.put("first", member.getFirstName());
             name.put("last", member.getLastName());
             top.put("3", name);
             top.put("4", member.getEmail());
             top.put("5", FormatUtil.formatPhone(member.getPhone()));
-            //JSONObject date = new JSONObject();
-            //date.put("year", 1900);
-            //date.put("month", 1);#
-            //date.put("day", 1);
-            //top.put("6", date);
+            top.put("17", picJson);
 
-            JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, updateUrl, top, new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject response) {
-                    System.out.println(response);
-                }
-            }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    MyApplication.saveError(activity.getApplicationContext(), error);
-                }
-            }) {
+            JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, updateUrl, top, listener,
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            MyApplication.saveError(activity.getApplicationContext(), error);
+                        }
+                    }) {
             };
             requestQueue.add(stringRequest);
         } catch (Exception e) {
