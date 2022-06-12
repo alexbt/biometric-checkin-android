@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,8 +50,9 @@ public class EditMemberFragment extends Fragment {
     private EditText lastName;
     private final SimpleDateFormat monthParse = new SimpleDateFormat("MM");
     private final SimpleDateFormat monthDisplay = new SimpleDateFormat("MMMM");
-    private  JotformMemberViewModel jotformMemberViewModel;
-    private final Response.Listener dummyListener = (Response.Listener<JSONObject>) response -> { };
+    private JotformMemberViewModel jotformMemberViewModel;
+    private final Response.Listener dummyListener = (Response.Listener<JSONObject>) response -> {
+    };
 
     // Store instance variables based on arguments passed
     @Override
@@ -138,20 +140,8 @@ public class EditMemberFragment extends Fragment {
         lastName = root.findViewById(R.id.lastName);
         lastName.setText(member.getLastName());
 
-        hasImageCheckbox = root.findViewById(R.id.has_image);
-
-        TextView hasImageLabel = root.findViewById(R.id.has_image_label);
-        boolean hasImageFlag = EditMemberFragment.member.getImage() != null;
-        if (hasImageFlag) {
-            hasImageCheckbox.setChecked(true);
-            hasImageLabel.setText("Photo présente");
-        } else {
-            hasImageCheckbox.setChecked(false);
-            hasImageCheckbox.setVisibility(View.INVISIBLE);
-            hasImageLabel.setText("Photo non présente");
-        }
-
         TextView save = root.findViewById(R.id.checkin_button);
+        save.setEnabled(false);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -196,6 +186,25 @@ public class EditMemberFragment extends Fragment {
                 }
             }
         });
+
+        hasImageCheckbox = root.findViewById(R.id.has_image);
+        hasImageCheckbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                save.setEnabled(true);
+            }
+        });
+
+        TextView hasImageLabel = root.findViewById(R.id.has_image_label);
+        boolean hasImageFlag = EditMemberFragment.member.getImage() != null;
+        if (hasImageFlag) {
+            hasImageCheckbox.setChecked(true);
+            hasImageLabel.setText("Photo présente");
+        } else {
+            hasImageCheckbox.setChecked(false);
+            hasImageCheckbox.setVisibility(View.INVISIBLE);
+            hasImageLabel.setText("Photo non présente");
+        }
 
         TextView cancel = root.findViewById(R.id.cancel);
         cancel.setOnClickListener(new View.OnClickListener() {

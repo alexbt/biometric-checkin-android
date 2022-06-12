@@ -44,6 +44,7 @@ import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.alexbt.biometric.MyApplication;
 import com.alexbt.biometric.R;
 import com.alexbt.biometric.fragment.viewmodel.JotformMemberViewModel;
 import com.alexbt.biometric.model.Member;
@@ -201,7 +202,7 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
                 image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
                 detector.process(image).addOnSuccessListener(
                         faces -> {
-                            if (dialog!=null && dialog.isShowing()){
+                            if (dialog != null && dialog.isShowing()) {
                                 return;
                             }
                             if (faces.size() != 0) {
@@ -329,8 +330,8 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
                     twoLineListItem = (LinearLayout) convertView;
                 }
                 Member member = this.getItem(position);
-                TextView textView1 = (TextView)twoLineListItem.getChildAt(0);
-                TextView textView2 = (TextView)twoLineListItem.getChildAt(1);
+                TextView textView1 = (TextView) twoLineListItem.getChildAt(0);
+                TextView textView2 = (TextView) twoLineListItem.getChildAt(1);
                 textView1.setText(String.format("%s %s", member.getFirstName(), member.getLastName()));
                 textView2.setText(String.format("%s", member.getEmail()));
 
@@ -343,8 +344,8 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
                     twoLineListItem.setGravity(Gravity.BOTTOM);
                     textView1.setGravity(Gravity.BOTTOM);
                     textView1.setPadding(textView1.getPaddingLeft(), textView1.getTotalPaddingTop(), textView1.getPaddingRight(), 0);
-                    textView1.setHeight(textView1.getLineHeight() + textView2.getLineHeight()/2);
-                    textView2.setHeight(textView2.getLineHeight()/2);
+                    textView1.setHeight(textView1.getLineHeight() + textView2.getLineHeight() / 2);
+                    textView2.setHeight(textView2.getLineHeight() / 2);
                 }
 
                 return twoLineListItem;
@@ -355,15 +356,15 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
                 UrlUtils.getMembersUrl(getContext()),
                 UrlUtils.updateMembersUrl(getContext()),
                 UrlUtils.addMembersUrl(getContext()));
-        jotformMemberViewModel.getJotformMembersOrFetch().observe(this.getViewLifecycleOwner(), new Observer<Set<Member>>() {
+        jotformMemberViewModel.getJotformMembersOrFetch(getActivity()).observe(this.getViewLifecycleOwner(), new Observer<Set<Member>>() {
             @Override
             public void onChanged(Set<Member> members) {
-                if (members == null || getContext() == null) {
+                if (getContext() == null || members == null || members.isEmpty()) {
                     return;
                 }
                 Set<Member> filteredMembers = new HashSet<>();
-                for(Member member: members){
-                    if (member.getImage()==null){
+                for (Member member : members) {
+                    if (member.getImage() == null) {
                         filteredMembers.add(member);
                     }
                 }
@@ -376,20 +377,53 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
 
         // Set up the buttons
         builder.setPositiveButton(R.string.ADD, (dialog, which) -> {
-            if(getActivity() == null){
+            if (getActivity() == null) {
                 return;
             }
             Member member;
-            if (spinner.getSelectedItemPosition() == 0) {
-                member = new Member(null, null, inputFirstName.getText().toString().trim(),
-                        inputLastName.getText().toString().trim(),
-                        inputEmail.getText().toString().trim(),
-                        inputPhone.getText().toString().trim(),
+            if (spinner.getSelectedItemPosition() <= 0) {
+                String first = inputFirstName.getText().toString().trim();
+                String lastName = inputLastName.getText().toString().trim();
+                String email = inputEmail.getText().toString().trim();
+                String phone = inputPhone.getText().toString().trim();
+
+                boolean is_valid = InputValidator.isMemberValid(
+                        inputFirstName.getText().toString(),
+                        inputLastName.getText().toString(),
+                        inputEmail.getText().toString(),
+                        inputPhone.getText().toString()
+                );
+                if (!is_valid) {
+                    //TODO ABT
+                    RuntimeException re = new RuntimeException(String.format("Unexpected: spinner.selectedItemPosition=%s, first=%s, last=%s, email=%s, phone=%s",
+                            spinner.getSelectedItemPosition(), first, lastName, email, phone));
+                    MyApplication.saveError(getContext(), re);
+                    Toast.makeText(getActivity().getApplicationContext(), "Erreur en ajoutant le membre", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+                member = new Member(null, null, first,
+                        lastName,
+                        email,
+                        phone,
                         null
                 );
                 Toast.makeText(getActivity().getApplicationContext(), R.string.ONE_MEMBER_ADDED, Toast.LENGTH_SHORT).show();
             } else {
                 member = (Member) spinner.getSelectedItem();
+                if (member == null) {
+                    //TODO ABT
+                    String first = inputFirstName.getText().toString().trim();
+                    String lastName = inputLastName.getText().toString().trim();
+                    String email = inputEmail.getText().toString().trim();
+                    String phone = inputPhone.getText().toString().trim();
+                    RuntimeException re = new RuntimeException(String.format("Unexpected: spinner.selectedItemPosition=%s, first=%s, last=%s, email=%s, phone=%s, member=%s",
+                            spinner.getSelectedItemPosition(), first, lastName, email, phone, member));
+                    MyApplication.saveError(getContext(), re);
+                    Toast.makeText(getActivity().getApplicationContext(), "Erreur en ajoutant le membre", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Toast.makeText(getActivity().getApplicationContext(), R.string.ONE_MEMBER_COMPLETED, Toast.LENGTH_SHORT).show();
             }
             //Toast.makeText(context, inputFirstName.getText().toString(), Toast.LENGTH_SHORT).show();
@@ -404,7 +438,7 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                if(getActivity() == null){
+                if (getActivity() == null) {
                     return;
                 }
                 NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
@@ -497,7 +531,6 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
         inputEmail.addTextChangedListener(te);
@@ -514,7 +547,7 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
-                if (dialog!=null && dialog.isShowing()){
+                if (dialog != null && dialog.isShowing()) {
                     return;
                 }
                 Toast.makeText(getContext(), "On activity result select picture", Toast.LENGTH_LONG).show();
