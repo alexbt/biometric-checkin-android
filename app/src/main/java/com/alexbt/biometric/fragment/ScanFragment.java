@@ -60,6 +60,7 @@ import org.tensorflow.lite.Interpreter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -90,6 +91,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
     private TextView checkinStatus;
     private TextView countdown;
     private JotformMemberViewModel jotformMemberViewModel;
+    private Map<String, String> processed = new HashMap<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,7 +121,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
                     return;
                 }
                 adapter.addAll(members);
-                adapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
+                adapter.sort(Member.getSortComparator());
                 adapter.insert(new Member(null, null, getString(R.string.MEMBRE_EXISTANT_INCOMPLET), "", "", "", null), 0);
                 adapter.notifyDataSetChanged();
             }
@@ -504,7 +506,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
             }
             resetMemberIdentification();
         } catch (RuntimeException e) {
-
+            //ignore
         }
     }
 
@@ -528,7 +530,8 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String formattedDate = df.format(dateTime);
 
-            if (sourceAutomatic && member.getLastCheckin() != null && member.getLastCheckin().equals(formattedDate)) {
+            String memberLastCheckin = processed.get(member.getMemberId());
+            if (sourceAutomatic && memberLastCheckin != null && memberLastCheckin.equals(formattedDate)) {
                 Toast.makeText(getActivity(), String.format("Présence DÉJÀ enregistrée pour %s %s", member.getFirstName(), member.getLastName()), Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -536,6 +539,8 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
             RequestUtil.sendCheckin(member, dateTime, formattedDate, getActivity(), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
+                    processed.put(member.getMemberId(), formattedDate);
+                    new Handler().postDelayed(() -> processed.remove(member.getMemberId()), 75 * 1000 * 60);
                     checkinStatus.setText(getLastCheckinText(member));
                 }
             }, new Response.ErrorListener() {

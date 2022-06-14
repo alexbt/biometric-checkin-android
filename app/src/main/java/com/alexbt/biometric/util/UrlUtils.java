@@ -20,7 +20,7 @@ public class UrlUtils {
             apiKey = context.getResources().getString(R.string.JOTFORM_API_KEY);
         }
         if(presenceFormId==null){
-            presenceFormId = context.getResources().getString(R.string.JOTFORM_PRESENCES_FORM_ID);
+            presenceFormId = context.getResources().getString(R.string.JOTFORM_CHECKINS_FORM_ID);
         }
         if(membersFormId==null){
             membersFormId = context.getResources().getString(R.string.JOTFORM_MEMBERS_FORM_ID);
@@ -31,7 +31,7 @@ public class UrlUtils {
         if(getCheckinsUrl!=null){
             return getCheckinsUrl;
         }
-        getCheckinsUrl = String.format(context.getResources().getString(R.string.GET_CHECKINS_URL), presenceFormId, apiKey);
+        getCheckinsUrl = String.format(context.getResources().getString(R.string.GET_ALL_CHECKINS_URL), presenceFormId, apiKey);
         return getCheckinsUrl;
     }
 
@@ -40,7 +40,7 @@ public class UrlUtils {
         if(getMembersUrl!=null){
             return getMembersUrl;
         }
-        getMembersUrl = String.format(context.getResources().getString(R.string.GET_MEMBERS_URL), membersFormId, apiKey);
+        getMembersUrl = String.format(context.getResources().getString(R.string.GET_ALL_MEMBERS_URL), membersFormId, apiKey);
         return getMembersUrl;
     }
 
@@ -67,7 +67,7 @@ public class UrlUtils {
         if(addPresenceUrl!=null){
             return addPresenceUrl;
         }
-        addPresenceUrl = String.format(context.getResources().getString(R.string.ADD_PRESENCE_URL), presenceFormId, apiKey);
+        addPresenceUrl = String.format(context.getResources().getString(R.string.ADD_CHECKIN_URL), presenceFormId, apiKey);
         return addPresenceUrl;
     }
 }

@@ -64,6 +64,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.2'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
+    implementation 'org.apache.commons:commons-text:1.6'
     def lottieVersion = "3.4.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 

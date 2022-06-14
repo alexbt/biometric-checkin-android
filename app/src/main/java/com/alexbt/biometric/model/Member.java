@@ -5,7 +5,11 @@ import androidx.annotation.NonNull;
 import com.alexbt.biometric.util.DateUtils;
 import com.google.gson.annotations.Expose;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
+import java.text.Normalizer;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -150,5 +154,10 @@ public class Member implements Comparable<Member>, Serializable {
     @Override
     public int compareTo(Member member) {
         return toUnique(this.firstName, this.lastName).compareTo(toUnique(member.getFirstName(), member.getLastName()));
+    }
+
+    @NonNull
+    public static Comparator<Member> getSortComparator() {
+        return (m1, m2) -> StringUtils.stripAccents(m1.toString().toLowerCase()).compareTo(StringUtils.stripAccents(m2.toString().toLowerCase()));
     }
 }

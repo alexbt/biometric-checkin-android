@@ -156,7 +156,6 @@ public class JotformMemberViewModel extends ViewModel {
             updateMember(activity, member, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    System.out.println(response);
                     try {
                         RequestUtil.sendCheckin(member, activity);
                     } catch (Exception e) {
@@ -199,13 +198,14 @@ public class JotformMemberViewModel extends ViewModel {
             JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, addMemberUrl, top, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    System.out.println(response);
-                    jotformMembers.setValue(null);
-                    jotformNextMemberId.setValue(jotformNextMemberId.getValue() + 1);
+                    jotformNextMemberId.setValue(jotformNextMemberId.getValue()+1);
+                    //jotformMembers.setValue(null);
                     try {
                         String submissionId = (String) ((JSONObject)response.get("content")).get("submissionID");
                         member.setSubmissionId(submissionId);
                         member.setMemberId(memberId);
+                        jotformMembers.getValue().add(member);
+                        jotformMembers.setValue(jotformMembers.getValue());
                         RequestUtil.sendCheckin(member, activity);
                     } catch (Exception e) {
                         //TODO ABT tmp

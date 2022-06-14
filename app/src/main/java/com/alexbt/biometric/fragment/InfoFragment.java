@@ -125,7 +125,7 @@ public class InfoFragment extends Fragment {
         };
         jotformMembersFormId.addTextChangedListener(te);
 
-        jotformPresencesFormId.setText(sharedPreferences.getString("jotformPresencesFormIdProp", getContext().getResources().getString(R.string.JOTFORM_PRESENCES_FORM_ID)));
+        jotformPresencesFormId.setText(sharedPreferences.getString("jotformPresencesFormIdProp", getContext().getResources().getString(R.string.JOTFORM_CHECKINS_FORM_ID)));
         te = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {

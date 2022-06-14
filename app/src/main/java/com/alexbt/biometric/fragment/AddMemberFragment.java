@@ -59,11 +59,14 @@ import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 
+import org.apache.commons.text.WordUtils;
 import org.tensorflow.lite.Interpreter;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.Normalizer;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -369,7 +372,7 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
                     }
                 }
                 adapter.addAll(filteredMembers);
-                adapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
+                adapter.sort(Member.getSortComparator());
                 adapter.insert(new Member(null, null, getString(R.string.MEMBRE_EXISTANT_INCOMPLET), "", "", "", null), 0);
                 adapter.notifyDataSetChanged();
             }
@@ -403,8 +406,9 @@ public class AddMemberFragment extends Fragment implements View.OnClickListener 
                 }
 
 
-                member = new Member(null, null, first,
-                        lastName,
+                member = new Member(null, null,
+                        WordUtils.capitalizeFully(first),
+                        WordUtils.capitalizeFully(lastName),
                         email,
                         phone,
                         null

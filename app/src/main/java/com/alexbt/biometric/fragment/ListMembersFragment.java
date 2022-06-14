@@ -45,6 +45,7 @@ import com.alexbt.biometric.util.UrlUtils;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +72,7 @@ public class ListMembersFragment extends Fragment implements View.OnClickListene
                 }
                 stringArrayAdapter.clear();
                 stringArrayAdapter.addAll(members);
-                stringArrayAdapter.sort((m1, m2) -> m1.toString().compareTo(m2.toString()));
+                stringArrayAdapter.sort(Member.getSortComparator());
                 stringArrayAdapter.notifyDataSetChanged();
             }
         });

@@ -1,6 +1,7 @@
 package com.alexbt.biometric.util;
 
 import android.app.Activity;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.alexbt.biometric.MyApplication;
@@ -81,7 +82,9 @@ public class RequestUtil {
                     }
                     member.setLastCheckin(formattedDate);
                     EventBus.getDefault().post(new NewCheckinRecordedEvent());
-                    Toast.makeText(activity, String.format("Présence enregistrée pour %s %s", member.getFirstName(), member.getLastName()), Toast.LENGTH_SHORT).show();
+                    Toast toast = Toast.makeText(activity, String.format("Présence enregistrée pour %s %s", member.getFirstName(), member.getLastName()), Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
                 }
             }, new Response.ErrorListener() {
                 @Override
