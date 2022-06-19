@@ -7,9 +7,11 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Pair;
 import android.util.Size;
 import android.view.Gravity;
@@ -26,7 +28,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -91,7 +95,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
     private TextView checkinStatus;
     private TextView countdown;
     private JotformMemberViewModel jotformMemberViewModel;
-    private Map<String, String> processed = new HashMap<>();
+    private boolean isLarge = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,9 +110,14 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
             return null;
         }
         View root = inflater.inflate(R.layout.fragment_scan, container, false);
-
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE);
 
+        try {
+            TextView sizeTestField = root.findViewById(R.id.size);
+            isLarge = !sizeTestField.getText().equals("small");
+        } catch (Exception e){
+
+        }
         jotformMemberViewModel = JotformMemberViewModel.getModel(this,
                 UrlUtils.getMembersUrl(getContext()),
                 UrlUtils.updateMembersUrl(getContext()),
@@ -159,7 +168,8 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
         });
         scannedMember = root.findViewById(R.id.scannedMember);
 
-        adapter = new ArrayAdapter<Member>(getActivity().getApplicationContext(), R.layout.abt_two_line_list_item) {
+        final int spinnerLayout = isLarge ? R.layout.abt_two_line_list_item_bigger: R.layout.abt_two_line_list_item;
+        adapter = new ArrayAdapter<Member>(getActivity().getApplicationContext(), spinnerLayout) {
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -179,7 +189,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
 
                 if (convertView == null) {
                     LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    twoLineListItem = (LinearLayout) inflater.inflate(R.layout.abt_two_line_list_item, null);
+                    twoLineListItem = (LinearLayout) inflater.inflate(spinnerLayout, null);
                 } else {
                     twoLineListItem = (LinearLayout) convertView;
                 }
@@ -419,7 +429,8 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
         });
 
         cameraProvider.unbindAll();
-        cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
+        Camera camera = cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
+        camera.getCameraControl().setZoomRatio(1.5f);
     }
 
     @Override
@@ -530,17 +541,30 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String formattedDate = df.format(dateTime);
 
-            String memberLastCheckin = processed.get(member.getMemberId());
-            if (sourceAutomatic && memberLastCheckin != null && memberLastCheckin.equals(formattedDate)) {
-                Toast.makeText(getActivity(), String.format("Présence DÉJÀ enregistrée pour %s %s", member.getFirstName(), member.getLastName()), Toast.LENGTH_SHORT).show();
+            final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE);
+            final String lastCheckinMemberProp = String.format("lastCheckin-%s", member.getMemberId());
+            String memberLastCheckin = sharedPreferences.getString(lastCheckinMemberProp, "");
+            if (sourceAutomatic && memberLastCheckin.equals(formattedDate)) {
+                LayoutInflater inflater = LayoutInflater.from(getContext());
+                View layout = inflater.inflate(R.layout.custom_toast,null);
+                TextView text = (TextView) layout.findViewById(R.id.message);
+                text.setText(String.format("Présence DÉJÀ enregistrée pour %s %s", member.getFirstName(), member.getLastName()));
+                text.setPadding(20,0,20,0);
+                text.setTextSize(40);
+                text.setTextColor(Color.WHITE);
+                Toast toast = new Toast(getContext());
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.setDuration(Toast.LENGTH_LONG);
+                layout.setBackgroundColor(Color.DKGRAY);
+                toast.setView(layout);
+                toast.show();
                 return;
             }
 
             RequestUtil.sendCheckin(member, dateTime, formattedDate, getActivity(), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    processed.put(member.getMemberId(), formattedDate);
-                    new Handler().postDelayed(() -> processed.remove(member.getMemberId()), 75 * 1000 * 60);
+                    sharedPreferences.edit().putString(lastCheckinMemberProp, formattedDate).apply();
                     checkinStatus.setText(getLastCheckinText(member));
                 }
             }, new Response.ErrorListener() {

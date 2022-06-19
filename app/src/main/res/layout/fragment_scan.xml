@@ -127,5 +127,12 @@
         app:layout_constraintTop_toBottomOf="@+id/scannedMember"
         android:text=""/>
 
+    <TextView android:id="@+id/size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="small"
+        android:visibility="gone"
+        tools:ignore="MissingConstraints" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

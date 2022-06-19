@@ -27,7 +27,7 @@
     <string name="UNKNOWN">Inconnu</string>
     <string name="MEMBER_UPDATED">Membre mis-à-jour</string>
     <string name="NAME_RECORDED">%1$s\nenregistré(e)</string>
-    <string name="MEMBRE_EXISTANT_INCOMPLET">Choisir un membre existant…</string>
+    <string name="MEMBRE_EXISTANT_INCOMPLET">OU choisir un membre existant…</string>
     <string name="ADD_MEMBER">Ajouter le membre:</string>
     <string name="REMOVE_MEMBER_TITLE">Suppression de membre</string>
     <string name="CONFIRM_REMOVAL_MEMBER">Voulez-vous vraiment supprimer:\n\n%s</string>
