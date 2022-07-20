@@ -105,9 +105,6 @@ public class RequestUtil {
                     View layout = inflater.inflate(R.layout.custom_toast, null);
                     TextView text = (TextView) layout.findViewById(R.id.message);
                     text.setText(String.format("Présence enregistrée pour %s %s", member.getFirstName(), member.getLastName()));
-                    text.setPadding(20, 0, 20, 0);
-                    text.setTextSize(40);
-                    text.setTextColor(Color.WHITE);
                     Toast toast = new Toast(activity.getApplicationContext());
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.setDuration(Toast.LENGTH_LONG);
@@ -116,7 +113,7 @@ public class RequestUtil {
                     toast.show();
 
                     tts.setLanguage(Locale.FRENCH);
-                    int result = tts.speak(member.getFirstName() + " enregistré", TextToSpeech.QUEUE_FLUSH, null, null);
+                    int result = tts.speak(member.getFirstName() + " est là", TextToSpeech.QUEUE_FLUSH, null, null);
                     if (result == -1) {
                         MediaPlayer.create(activity.getApplicationContext(), Settings.System.DEFAULT_NOTIFICATION_URI).start();
                     }

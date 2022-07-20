@@ -7,11 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.media.Image;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.provider.Settings;
 import android.util.Pair;
 import android.util.Size;
 import android.view.Gravity;
@@ -30,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -64,7 +61,6 @@ import org.tensorflow.lite.Interpreter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -95,7 +91,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
     private TextView checkinStatus;
     private TextView countdown;
     private JotformMemberViewModel jotformMemberViewModel;
-    private boolean isLarge = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,12 +108,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
         View root = inflater.inflate(R.layout.fragment_scan, container, false);
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE);
 
-        try {
-            TextView sizeTestField = root.findViewById(R.id.size);
-            isLarge = !sizeTestField.getText().equals("small");
-        } catch (Exception e){
-
-        }
         jotformMemberViewModel = JotformMemberViewModel.getModel(this,
                 UrlUtils.getMembersUrl(getContext()),
                 UrlUtils.updateMembersUrl(getContext()),
@@ -169,8 +158,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
         });
         scannedMember = root.findViewById(R.id.scannedMember);
 
-        final int spinnerLayout = isLarge ? R.layout.abt_two_line_list_item_bigger: R.layout.abt_two_line_list_item;
-        adapter = new ArrayAdapter<Member>(getActivity().getApplicationContext(), spinnerLayout) {
+        adapter = new ArrayAdapter<Member>(getActivity().getApplicationContext(), R.layout.abt_checkin_two_line_list_item) {
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -190,7 +178,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
 
                 if (convertView == null) {
                     LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    twoLineListItem = (LinearLayout) inflater.inflate(spinnerLayout, null);
+                    twoLineListItem = (LinearLayout) inflater.inflate(R.layout.abt_checkin_two_line_list_item, null);
                 } else {
                     twoLineListItem = (LinearLayout) convertView;
                 }
@@ -550,9 +538,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
                 View layout = inflater.inflate(R.layout.custom_toast,null);
                 TextView text = (TextView) layout.findViewById(R.id.message);
                 text.setText(String.format("Présence DÉJÀ enregistrée pour %s %s", member.getFirstName(), member.getLastName()));
-                text.setPadding(20,0,20,0);
-                text.setTextSize(40);
-                text.setTextColor(Color.WHITE);
                 Toast toast = new Toast(getContext());
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.setDuration(Toast.LENGTH_LONG);
