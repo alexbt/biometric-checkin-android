@@ -104,7 +104,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
         if (container == null || getActivity() == null || getContext() == null) {
             return null;
         }
-        RequestUtil.init(getActivity());
         View root = inflater.inflate(R.layout.fragment_scan, container, false);
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE);
 

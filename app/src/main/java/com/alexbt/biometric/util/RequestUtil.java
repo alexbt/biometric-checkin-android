@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
@@ -36,7 +39,6 @@ import java.util.Locale;
 public class RequestUtil {
     private static String URL = null;
     private static String SOURCE_APP = null;
-    private static TextToSpeech tts = null;
 
     public static void sendCheckin(Member member, Activity activity) {
         Date dateTime = Calendar.getInstance().getTime();
@@ -51,13 +53,6 @@ public class RequestUtil {
         }
         if (SOURCE_APP == null) {
             SOURCE_APP = activity.getApplicationContext().getResources().getString(R.string.SOURCE_APP);
-        }
-        if (tts == null) {
-            tts = new TextToSpeech(activity.getApplicationContext(), new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int status) {
-                }
-            });
         }
 
         String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(dateTime);
@@ -112,11 +107,15 @@ public class RequestUtil {
                     toast.setView(layout);
                     toast.show();
 
-                    tts.setLanguage(Locale.FRENCH);
-                    int result = tts.speak(member.getFirstName() + " est là", TextToSpeech.QUEUE_FLUSH, null, null);
-                    if (result == -1) {
-                        MediaPlayer.create(activity.getApplicationContext(), Settings.System.DEFAULT_NOTIFICATION_URI).start();
-                    }
+
+                    final Mutable<TextToSpeech> tts = new MutableObject<>();
+                    tts.setValue(new TextToSpeech(activity.getApplicationContext(), new TextToSpeech.OnInitListener() {
+                        @Override
+                        public void onInit(int status) {
+                            tts.getValue().setLanguage(Locale.FRENCH);
+                            tts.getValue().speak(member.getFirstName() + " est là", TextToSpeech.QUEUE_FLUSH, null, null);
+                        }
+                    }));
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -133,13 +132,5 @@ public class RequestUtil {
         } catch (Exception e) {
             MyApplication.saveError(activity.getApplicationContext(), e);
         }
-    }
-
-    public static void init(FragmentActivity activity) {
-        tts = new TextToSpeech(activity.getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-            }
-        });
     }
 }
