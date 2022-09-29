@@ -17,10 +17,7 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.util.Pair;
 
-import androidx.lifecycle.LiveData;
-
 import com.alexbt.biometric.model.Member;
-import com.alexbt.biometric.persistence.MemberPersistence;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;

@@ -67,7 +67,10 @@ public abstract class OnSwipeTouchListener implements View.OnTouchListener {
     }
 
     abstract public void onSwipeRight();
+
     abstract public void onSwipeLeft();
+
     abstract public void onSwipeTop();
+
     abstract public void onSwipeBottom();
 }

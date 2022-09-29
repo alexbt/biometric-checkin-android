@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="20sp"
+    android:layout_marginTop="30sp"
+    android:layout_marginEnd="30sp">
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="1"
+        tools:ignore="MissingConstraints">
+
+        <Spinner
+            android:id="@+id/existingMembers"
+            android:gravity="center"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="MissingConstraints" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="5dp"
+            android:background="#c0c0c0"/>
+
+        <TextView
+            android:id="@+id/prefilled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/firstName"
+            android:textSize="40sp"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="5dp"
+            tools:ignore="RtlSymmetry"
+            android:text="@string/ENTER_MEMBER" />
+
+        <EditText
+            android:id="@+id/firstName"
+            android:paddingTop="0dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/editTextBackground"
+            android:linksClickable="true"
+            android:inputType="text"
+            android:textSize="30sp"
+            android:layout_marginTop="10dp"
+            android:hint="@string/FIRST_NAME"
+            android:singleLine="true"
+            tools:ignore="MissingConstraints" />
+
+        <EditText
+            android:id="@+id/lastName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="0dp"
+            android:background="?attr/editTextBackground"
+            android:linksClickable="true"
+            android:inputType="text"
+            android:textSize="30sp"
+            android:layout_marginTop="10dp"
+            android:hint="@string/LAST_NAME"
+            android:singleLine="true"
+            tools:ignore="MissingConstraints" />
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="0dp"
+            android:background="?attr/editTextBackground"
+            android:linksClickable="true"
+            android:singleLine="true"
+            android:textSize="30sp"
+            android:layout_marginTop="10dp"
+            android:hint="@string/EMAIL"
+            android:inputType="textEmailAddress"
+            tools:ignore="MissingConstraints" />
+
+        <EditText
+            android:id="@+id/phone"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="0dp"
+            android:background="?attr/editTextBackground"
+            android:linksClickable="true"
+            android:inputType="phone"
+            android:singleLine="true"
+            android:textSize="30sp"
+            android:layout_marginTop="10dp"
+            android:hint="@string/PHONE"
+            tools:ignore="MissingConstraints" />
+
+    </GridLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

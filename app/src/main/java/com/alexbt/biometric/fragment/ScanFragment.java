@@ -42,7 +42,6 @@ import com.alexbt.biometric.MyApplication;
 import com.alexbt.biometric.R;
 import com.alexbt.biometric.fragment.viewmodel.JotformMemberViewModel;
 import com.alexbt.biometric.model.Member;
-import com.alexbt.biometric.util.DateUtils;
 import com.alexbt.biometric.util.ImageUtils;
 import com.alexbt.biometric.util.RequestUtil;
 import com.alexbt.biometric.util.UrlUtils;
@@ -88,7 +87,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
     private ArrayAdapter<Member> adapter;
     private TextView checkinButton;
     private TextView resetButton;
-    private TextView checkinStatus;
     private TextView countdown;
     private JotformMemberViewModel jotformMemberViewModel;
 
@@ -129,7 +127,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
         previewView = root.findViewById(R.id.camera_preview_image);
         countdown = root.findViewById(R.id.countdown);
         checkinButton = root.findViewById(R.id.checkin_button);
-        checkinStatus = root.findViewById(R.id.checkinStatus);
         resetButton = root.findViewById(R.id.reset_button);
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,7 +207,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
                                 enableCheckinButton(true);
                                 countdown.setText("");
                                 Member member = (Member) scannedMember.getSelectedItem();
-                                checkinStatus.setText(getLastCheckinText(member));
                                 isMemberIdentified = true;
                             }
                             resetButton.setEnabled(isMemberIdentified);
@@ -229,8 +225,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 enableCheckinButton(i > 0);
-                Member member = (Member) scannedMember.getItemAtPosition(i);
-                checkinStatus.setText(getLastCheckinText(member));
             }
 
             @Override
@@ -292,9 +286,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
         if (scannedMember != null) {
             scannedMember.setSelection(0);
         }
-        if (checkinStatus != null) {
-            checkinStatus.setText("");
-        }
         if (resetButton != null) {
             resetButton.setEnabled(false);
         }
@@ -310,20 +301,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
                 isMemberIdentified = false;
             }
         }, 1000);
-    }
-
-    @NonNull
-    private String getLastCheckinText(Member member) {
-        String current = DateUtils.getCurrentDate();
-        String text;
-        if (member.getLastCheckin() == null) {
-            text = "";
-        } else if (current.equals(member.getLastCheckin())) {
-            text = String.format("Dernier checkin: %s (aujourd'hui)", member.getLastCheckin());
-        } else {
-            text = String.format("Dernier checkin: %s", member.getLastCheckin());
-        }
-        return text;
     }
 
     private void cameraBind() {
@@ -534,7 +511,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
             String memberLastCheckin = sharedPreferences.getString(lastCheckinMemberProp, "");
             if (sourceAutomatic && memberLastCheckin.equals(formattedDate)) {
                 LayoutInflater inflater = LayoutInflater.from(getContext());
-                View layout = inflater.inflate(R.layout.custom_toast,null);
+                View layout = inflater.inflate(R.layout.custom_toast, null);
                 TextView text = (TextView) layout.findViewById(R.id.message);
                 text.setText(String.format("Présence DÉJÀ enregistrée pour %s %s", member.getFirstName(), member.getLastName()));
                 Toast toast = new Toast(getContext());
@@ -550,7 +527,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onResponse(JSONObject response) {
                     sharedPreferences.edit().putString(lastCheckinMemberProp, formattedDate).apply();
-                    checkinStatus.setText(getLastCheckinText(member));
                 }
             }, new Response.ErrorListener() {
                 @Override

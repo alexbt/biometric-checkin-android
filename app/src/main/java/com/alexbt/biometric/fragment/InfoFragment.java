@@ -8,7 +8,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -43,16 +42,6 @@ public class InfoFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_info, container, false);
         TextView buildVersion = root.findViewById(R.id.buildVersion);
         buildVersion.setText(BuildConfig.VERSION);
-
-        TextView lastDayExported = root.findViewById(R.id.lastDayExported);
-        lastDayExported.setText(getActivity()
-                .getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE)
-                .getString("lastDayExportedProp", "Jamais"));
-
-        CheckBox memberChangedSinceLastExport = root.findViewById(R.id.memberChangedSinceLastExport);
-        memberChangedSinceLastExport.setChecked(!getActivity()
-                .getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE)
-                .getBoolean("membersChangedSinceLastExportProp", false));
 
         sendErrorButton = root.findViewById(R.id.send_error_report);
         setSendReportStatus();

@@ -2,7 +2,7 @@ package com.alexbt.biometric.model;
 
 import java.util.Map;
 
-public class Content{
+public class Content {
     private String id;
     private String form_id;
     private String status;

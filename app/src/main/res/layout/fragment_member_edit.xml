@@ -52,21 +52,6 @@
                 android:textStyle="bold"
                 app:drawableTopCompat="@drawable/ic_baseline_save_24" />
 
-
-            <TextView
-                android:id="@+id/delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:singleLine="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:linksClickable="true"
-                android:paddingEnd="10dp"
-                android:paddingStart="10dp"
-                android:text="@string/DELETE"
-                android:textStyle="bold"
-                app:drawableTopCompat="@drawable/ic_baseline_delete_outline_24" />
         </LinearLayout>
 
         <TextView
@@ -150,27 +135,6 @@
             android:singleLine="true"
             tools:ignore="MissingConstraints" />
 
-        <TextView
-            android:id="@+id/last_checkin_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingStart="3dp"
-            tools:ignore="RtlSymmetry"
-            android:labelFor="@+id/has_image"
-            android:text="Dernier checkin"/>
-
-        <EditText
-            android:id="@+id/last_checkin"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="0dp"
-            android:background="?attr/editTextBackground"
-            android:linksClickable="true"
-            android:inputType="none"
-            android:singleLine="true"
-            tools:ignore="MissingConstraints" />
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -199,29 +163,6 @@
             android:focusable="true" />
         </LinearLayout>
 
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="5dp"
-            android:background="#c0c0c0"/>
-
-        <TextView
-            android:id="@+id/checkinsLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingStart="3dp"
-            tools:ignore="RtlSymmetry"
-            android:textStyle="bold"
-            android:labelFor="@+id/has_image"
-            android:text="Présences"/>
-        <TextView
-            android:id="@+id/dates"
-            android:paddingStart="3dp"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            tools:ignore="RtlSymmetry" />
 
     </GridLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

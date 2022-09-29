@@ -116,16 +116,6 @@
         app:layout_constraintBottom_toTopOf="@+id/scannedMember"
         tools:ignore="MissingConstraints,RtlSymmetry" />
 
-    <TextView
-        android:id="@+id/checkinStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="5dp"
-        android:paddingStart="3dp"
-        tools:ignore="RtlSymmetry"
-        app:layout_constraintStart_toStartOf="@id/container"
-        app:layout_constraintTop_toBottomOf="@+id/scannedMember"
-        android:text=""/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

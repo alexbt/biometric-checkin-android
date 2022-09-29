@@ -52,56 +52,6 @@
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/lastDayExportedLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:labelFor="@+id/buildVersion"
-            android:singleLine="true"
-            android:paddingStart="3dp"
-            android:paddingTop="5dp"
-            android:text="@string/LAST_EXPORT"
-            tools:ignore="RtlSymmetry" />
-
-        <TextView
-            android:id="@+id/lastDayExported"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/editTextBackground"
-            android:linksClickable="true"
-            android:paddingTop="0dp"
-            android:singleLine="true"
-            android:textStyle="bold"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="start"
-            android:paddingBottom="20dp"
-            tools:ignore="MissingConstraints">
-        <TextView
-            android:id="@+id/memberChangedSinceLastExportLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:labelFor="@+id/buildVersion"
-            android:singleLine="true"
-            android:paddingStart="3dp"
-            android:paddingTop="5dp"
-            android:text="@string/UNSAVED_DATA"
-            tools:ignore="RtlSymmetry" />
-
-        <CheckBox
-            android:id="@+id/memberChangedSinceLastExport"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layoutDirection="rtl"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="false"
-            android:focusable="false" />
-
-        </LinearLayout>
-
-        <TextView
             android:id="@+id/distanceLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

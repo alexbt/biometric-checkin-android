@@ -25,6 +25,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 
 import org.greenrobot.eventbus.EventBus;
@@ -62,7 +63,7 @@ public class JotformMemberViewModel extends ViewModel {
 
                 int currentHighestMemberId = 0;
                 for (Content content : jotformMember.getContent()) {
-                    String memberId = (String) content.getAnswers().get("19").get("answer");
+                    String memberId = (String) content.getAnswers().get("25").get("answer");
                     int current = 0;
                     try {
                         current = Integer.parseInt(memberId.replace("GBG-", ""));
@@ -83,7 +84,13 @@ public class JotformMemberViewModel extends ViewModel {
                     if (email == null) {
                         email = "";
                     }
-                    String phone = (String) content.getAnswers().get("5").get("answer");
+                    Object ph = content.getAnswers().get("5").get("answer");
+                    String phone;
+                    if (ph instanceof LinkedTreeMap){
+                        phone = (String) ((LinkedTreeMap<?, ?>) ph).get("full");
+                    }else {
+                        phone = (String) ph;
+                    }
                     if (phone == null) {
                         phone = "";
                     }
@@ -118,7 +125,10 @@ public class JotformMemberViewModel extends ViewModel {
                     members.add(new Member(submissionId, memberId, firstName, lastName, email, phone, pc));
                 }
                 jotformMembers.setValue(members);
-                jotformNextMemberId.setValue(currentHighestMemberId+1);
+                if ( currentHighestMemberId < 5000 ){
+                    currentHighestMemberId = 5000;
+                }
+                jotformNextMemberId.setValue(currentHighestMemberId + 1);
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -182,7 +192,9 @@ public class JotformMemberViewModel extends ViewModel {
             top.put("15", "0");
             top.put("16", "Non");
             top.put("8", "");//Notes
-            top.put("19", memberId);
+            //top.put("19", memberId);
+            top.put("25", memberId);
+            top.put("24", jotformNextMemberId.getValue());
             JSONObject name = new JSONObject();
             name.put("first", member.getFirstName());
             name.put("last", member.getLastName());
@@ -198,10 +210,10 @@ public class JotformMemberViewModel extends ViewModel {
             JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, addMemberUrl, top, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    jotformNextMemberId.setValue(jotformNextMemberId.getValue()+1);
+                    jotformNextMemberId.setValue(jotformNextMemberId.getValue() + 1);
                     //jotformMembers.setValue(null);
                     try {
-                        String submissionId = (String) ((JSONObject)response.get("content")).get("submissionID");
+                        String submissionId = (String) ((JSONObject) response.get("content")).get("submissionID");
                         member.setSubmissionId(submissionId);
                         member.setMemberId(memberId);
                         jotformMembers.getValue().add(member);

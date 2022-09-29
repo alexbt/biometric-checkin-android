@@ -14,7 +14,7 @@ public class JsonUtil {
         return new Gson().fromJson(json, token.getType());
     }
 
-    public static String toJson(Set<Member> members){
+    public static String toJson(Set<Member> members) {
         return new Gson().toJson(members);
     }
 }

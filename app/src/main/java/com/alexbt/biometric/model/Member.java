@@ -3,15 +3,11 @@ package com.alexbt.biometric.model;
 import androidx.annotation.NonNull;
 
 import com.alexbt.biometric.util.DateUtils;
-import com.google.gson.annotations.Expose;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
-import java.text.Normalizer;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class Member implements Comparable<Member>, Serializable {
@@ -35,6 +31,7 @@ public class Member implements Comparable<Member>, Serializable {
         this.image = null;
         this.lastCheckin = null;
         this.image = image;
+        this.updatedAt = null;
         touchUpdatedAt();
     }
 
@@ -92,10 +89,6 @@ public class Member implements Comparable<Member>, Serializable {
         touchUpdatedAt();
     }
 
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
     public void setPhone(String phone) {
         this.phone = phone;
         touchUpdatedAt();
@@ -109,10 +102,6 @@ public class Member implements Comparable<Member>, Serializable {
         this.updatedAt = DateUtils.getCurrentTime();
     }
 
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public String getMemberId() {
         return memberId;
     }
@@ -124,10 +113,6 @@ public class Member implements Comparable<Member>, Serializable {
     @Override
     public String toString() {
         return firstName + " " + lastName + "\n" + email;
-    }
-
-    public String toShortString() {
-        return firstName + ", " + lastName + ", " + email;
     }
 
     @Override
@@ -145,10 +130,6 @@ public class Member implements Comparable<Member>, Serializable {
 
     public static String toUnique(String firstName, String lastName) {
         return firstName + " " + lastName;
-    }
-
-    public String toKey() {
-        return toUnique(firstName, lastName);
     }
 
     @Override

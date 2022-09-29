@@ -41,10 +41,11 @@
     <string name="SCAN_DISTANCE">Tolérance/Distance des scans</string>
     <string name="SEND_ERROR_REPORT">Envoyer le rapport d\'erreur</string>
     <string name="UNSAVED_DATA">Tous les membres ont été exportés</string>
-    <string name="LAST_EXPORT">Dernier export des membres</string>
     <string name="CHECKIN">Checkin</string>
     <string name="RESET">Reset</string>
     <string name="ABOUT">About</string>
     <string name="SCAN">Scan</string>
     <string name="MEMBERS">Membres</string>
+    <string name="PHOTO_MISSING">Photo non présente</string>
+    <string name="PHOTO_EXISTS">Photo présente</string>
 </resources>

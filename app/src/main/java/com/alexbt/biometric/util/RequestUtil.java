@@ -2,18 +2,12 @@ package com.alexbt.biometric.util;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.media.MediaPlayer;
-import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.Voice;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.fragment.app.FragmentActivity;
 
 import com.alexbt.biometric.MyApplication;
 import com.alexbt.biometric.R;
@@ -37,9 +31,6 @@ import java.util.Date;
 import java.util.Locale;
 
 public class RequestUtil {
-    private static String URL = null;
-    private static String SOURCE_APP = null;
-
     public static void sendCheckin(Member member, Activity activity) {
         Date dateTime = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -48,12 +39,8 @@ public class RequestUtil {
     }
 
     public static void sendCheckin(Member member, Date dateTime, String formattedDate, Activity activity, Response.Listener<JSONObject> responseListener, Response.ErrorListener errorListener) {
-        if (URL == null) {
-            URL = UrlUtils.addPresenceUrl(activity.getApplicationContext());
-        }
-        if (SOURCE_APP == null) {
-            SOURCE_APP = activity.getApplicationContext().getResources().getString(R.string.SOURCE_APP);
-        }
+        final String URL = UrlUtils.addCheckinUrl(activity.getApplicationContext());
+        final String SOURCE_APP = activity.getApplicationContext().getResources().getString(R.string.SOURCE_APP);
 
         String year = new SimpleDateFormat("yyyy", Locale.getDefault()).format(dateTime);
         String month = new SimpleDateFormat("MM", Locale.getDefault()).format(dateTime);

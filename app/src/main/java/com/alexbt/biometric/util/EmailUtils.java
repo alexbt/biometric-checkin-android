@@ -10,7 +10,7 @@ import com.alexbt.biometric.BuildConfig;
 
 public class EmailUtils {
 
-    public static void markIgnoreError(Activity activity){
+    public static void markIgnoreError(Activity activity) {
         SharedPreferences sharedPref = activity
                 .getSharedPreferences("biometricCheckinSharedPref", Context.MODE_PRIVATE);
         int lastErrorIgnoreCount = sharedPref
@@ -23,6 +23,7 @@ public class EmailUtils {
                     .apply();
         }
     }
+
     public static void sendErrorEmail(Activity activity, String lastError) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setType("text/plain");

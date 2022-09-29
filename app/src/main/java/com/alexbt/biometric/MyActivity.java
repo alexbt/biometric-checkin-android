@@ -22,7 +22,6 @@ import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import com.alexbt.biometric.persistence.MemberPersistence;
 import com.alexbt.biometric.util.EmailUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -73,15 +72,14 @@ public class MyActivity extends AppCompatActivity {
                                 EmailUtils.sendErrorEmail(activity, lastError);
                             }
                         })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener(){
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 EmailUtils.markIgnoreError(activity);
                             }
                         }).show();
             }
-
-            if (BuildConfig.VERSION.compareTo(remoteVersion) < 0) {
+            else if (BuildConfig.VERSION.compareTo(remoteVersion) < 0) {
                 new AlertDialog.Builder(this)
                         .setTitle(String.format("Nouvelle version '%s'", remoteVersion))
                         .setMessage("Voulez-vous la télécharger?")
@@ -112,8 +110,6 @@ public class MyActivity extends AppCompatActivity {
         //toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_baseline_add_24));
         //getActionBar().setIcon(R.drawable.ic_launcher)
 
-        MemberPersistence.init(this);
-
         View viewById = findViewById(R.id.nav_host_fragment);
         viewById.setOnTouchListener(new OnSwipeTouchListener(this, MyActivity.this) {
             public void onSwipeTop() {
@@ -127,7 +123,7 @@ public class MyActivity extends AppCompatActivity {
                     return;
                 }
 
-                switch (current.getId()){
+                switch (current.getId()) {
                     case R.id.navigation_info:
                         navController.navigate(R.id.navigation_scan);
                         break;
